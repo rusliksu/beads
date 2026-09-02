@@ -1,6 +1,6 @@
 # Implementation Plan: Ruslan Beads Fork Authority
 
-**Branch**: `codex/beads-fork-authority` | **Date**: 2026-09-02 | **Spec**: [spec.md](spec.md)  
+**Branch**: `codex/beads-fork-authority` | **Date**: 2026-09-02 | **Spec**: [spec.md](spec.md)
 **Input**: Behavior-identical fork authority, reviewed upstream synchronization, Windows/Linux build canary, and fork release identity without publishing or installing anything.
 
 ## Summary
@@ -17,14 +17,14 @@ Persist the minimum repository-local Spec Kitty governance needed to own future 
 
 ## Technical Context
 
-**Language/Version**: Go 1.26.5 for repository contract tests; PowerShell 7 for cross-platform operator helpers; GitHub Actions YAML for hosted canaries  
-**Primary Dependencies**: Existing Git CLI, PowerShell, GitHub Actions, `actions/checkout`, `actions/setup-go`, and existing Go module dependencies only; no new runtime dependency  
-**Storage**: Versioned JSON evidence manifests and Markdown guidance only; no Beads/Dolt schema or persistent product data change  
-**Testing**: Test-first Go contract tests under `scripts/`, targeted helper dry-runs in disposable Git repositories, `spec-kitty` artifact validation, and hosted Windows/Linux canary runs tied to one commit  
-**Target Platform**: Windows 11 / `windows-latest` and Linux / `ubuntu-latest`; scripts use `pwsh` on both  
-**Project Type**: Repository-maintenance tooling and governance documentation around a single Go CLI repository  
-**Performance Goals**: Local no-fetch preflight completes within 60 seconds for the Beads repository; each hosted platform canary completes or times out within 15 minutes  
-**Constraints**: Behavior-identical fork, PR-only stable-branch changes, exact-SHA evidence, no secret content in logs, no install/release side effects, no new product schema or orchestration surface  
+**Language/Version**: Go 1.26.5 for repository contract tests; PowerShell 7 for cross-platform operator helpers; GitHub Actions YAML for hosted canaries
+**Primary Dependencies**: Existing Git CLI, PowerShell, GitHub Actions, `actions/checkout`, `actions/setup-go`, and existing Go module dependencies only; no new runtime dependency
+**Storage**: Versioned JSON evidence manifests and Markdown guidance only; no Beads/Dolt schema or persistent product data change
+**Testing**: Test-first Go contract tests under `scripts/`, targeted helper dry-runs in disposable Git repositories, `spec-kitty` artifact validation, and hosted Windows/Linux canary runs tied to one commit
+**Target Platform**: Windows 11 / `windows-latest` and Linux / `ubuntu-latest`; scripts use `pwsh` on both
+**Project Type**: Repository-maintenance tooling and governance documentation around a single Go CLI repository
+**Performance Goals**: Local no-fetch preflight completes within 60 seconds for the Beads repository; each hosted platform canary completes or times out within 15 minutes
+**Constraints**: Behavior-identical fork, PR-only stable-branch changes, exact-SHA evidence, no secret content in logs, no install/release side effects, no new product schema or orchestration surface
 **Scale/Scope**: One fork, one configured upstream, one stable branch, one sync candidate at a time, two required build platforms, four focused implementation work packages
 
 ## Charter Check
