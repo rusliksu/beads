@@ -28,7 +28,8 @@
       "last_transition_at": "2026-09-02T20:30:15.313393+00:00",
       "model": "__resolved_model_absent__",
       "notes": [
-        "Ready for review: implementation d0e12719 and lane-hygiene cleanup 035459c; doctor/context/diff/doc-freshness passed; contributor preflight and docsync are explicitly unexecuted because jq and Go are unavailable."
+        "Ready for review: implementation d0e12719 and lane-hygiene cleanup 035459c; doctor/context/diff/doc-freshness passed; contributor preflight and docsync are explicitly unexecuted because jq and Go are unavailable.",
+        "Review passed: scoped docs/bootstrap only; FR-001/003/008 assertions, relative links, doctor skills, mission context, diff check, ignore protections, sensitive-path scan, and docs freshness passed. Canonical pr-preflight was invoked but unexecuted because jq is absent; equivalent live GitHub prior-art triage found only unrelated PR #4844. Go docsync remained unexecuted and pre-review gate was no_coverage, not green coverage; acceptable here because WP01 changes no product/runtime code and manual contract checks passed."
       ],
       "provider": "__resolved_provider_absent__",
       "review_result": {
