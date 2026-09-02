@@ -12,5 +12,7 @@
   "purpose_tldr": "Make Ruslan's Beads fork reproducible and independently maintainable without premature behavior divergence.",
   "slug": "ruslan-beads-fork-authority-01M1HSDR",
   "target_branch": "codex/beads-fork-authority",
-  "topology": "coord"
+  "topology": "coord",
+  "vcs": "git",
+  "vcs_locked_at": "2026-09-02T20:01:37.053148+00:00"
 }
