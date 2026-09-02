@@ -8,7 +8,10 @@ requirement_refs:
 - FR-008
 planning_base_branch: codex/beads-fork-authority
 merge_target_branch: codex/beads-fork-authority
-branch_strategy: Implement in the lane worktree allocated by lanes.json; later delivery is a reviewed PR from codex/beads-fork-authority to rusliksu/beads:main.
+branch_strategy: Planning artifacts for this mission were generated on codex/beads-fork-authority. During /spec-kitty.implement this WP may branch from a dependency-specific base, but completed changes must merge back into codex/beads-fork-authority unless the human explicitly redirects the landing branch.
+base_branch: kitty/mission-ruslan-beads-fork-authority-01M1HSDR
+base_commit: 564f74197c203b5b16e0e299e5ed12344a88419f
+created_at: '2026-09-02T20:01:43.674671+00:00'
 subtasks:
 - T001
 - T002
