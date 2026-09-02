@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "mission_slug": "ruslan-beads-fork-authority-01M1HSDR",
+  "mission_id": "01M1HSDRP5DX8BAKFSMVFP9FYZ",
+  "mission_branch": "kitty/mission-ruslan-beads-fork-authority-01M1HSDR",
+  "target_branch": "codex/beads-fork-authority",
+  "lanes": [
+    {
+      "lane_id": "lane-a",
+      "wp_ids": [
+        "WP01"
+      ],
+      "write_scope": [
+        ".claudeignore",
+        ".gitattributes",
+        ".gitignore",
+        ".kittify/agent_profiles_manifest.json",
+        ".kittify/canonical-events.jsonl",
+        ".kittify/command-skills-manifest.json",
+        ".kittify/config.yaml",
+        ".kittify/metadata.yaml",
+        "AGENTS.md",
+        "engdocs/FORK_MAINTENANCE.md"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "artifact-rendering",
+        "dashboard",
+        "legacy-cleanup",
+        "tracker-integration",
+        "workspace"
+      ],
+      "depends_on_lanes": [],
+      "parallel_group": 0
+    },
+    {
+      "lane_id": "lane-b",
+      "wp_ids": [
+        "WP02"
+      ],
+      "write_scope": [
+        "scripts/fork-sync-preflight.ps1",
+        "scripts/fork_sync_preflight_test.go"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "tracker-integration",
+        "workspace"
+      ],
+      "depends_on_lanes": [
+        "lane-a"
+      ],
+      "parallel_group": 1
+    },
+    {
+      "lane_id": "lane-c",
+      "wp_ids": [
+        "WP03"
+      ],
+      "write_scope": [
+        ".github/workflows/fork-canary.yml",
+        "scripts/fork_canary_workflow_test.go"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "artifact-rendering",
+        "legacy-cleanup",
+        "workspace"
+      ],
+      "depends_on_lanes": [
+        "lane-a",
+        "lane-b"
+      ],
+      "parallel_group": 2
+    },
+    {
+      "lane_id": "lane-d",
+      "wp_ids": [
+        "WP04"
+      ],
+      "write_scope": [
+        "engdocs/FORK_RELEASE_IDENTITY.md",
+        "scripts/fork-release-identity.ps1",
+        "scripts/fork_release_identity_test.go"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "tracker-integration",
+        "workspace"
+      ],
+      "depends_on_lanes": [
+        "lane-a",
+        "lane-b"
+      ],
+      "parallel_group": 2
+    }
+  ],
+  "computed_at": "2026-09-02T19:44:08.892047+00:00",
+  "computed_from": "dependency_graph+ownership",
+  "planning_artifact_wps": [],
+  "planning_commit_sha": "9478f7e2163602b13e01382b9540d9542f5223f1"
+}
