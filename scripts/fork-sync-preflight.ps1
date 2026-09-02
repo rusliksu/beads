@@ -19,6 +19,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$GitCommandTimeoutMilliseconds = 15000
 
 function Invoke-GitCapture {
     param(
@@ -39,23 +40,41 @@ function Invoke-GitCapture {
         $startInfo.ArgumentList.Add($argument)
     }
 
+    $process = [System.Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
     try {
-        $process = [System.Diagnostics.Process]::new()
-        $process.StartInfo = $startInfo
-        if (-not $process.Start()) {
-            throw 'start failed'
-        }
-        $standardOutput = $process.StandardOutput.ReadToEndAsync()
-        $standardError = $process.StandardError.ReadToEndAsync()
-        $process.WaitForExit()
-        $stdout = $standardOutput.GetAwaiter().GetResult()
-        $null = $standardError.GetAwaiter().GetResult()
-        $exitCode = $process.ExitCode
-        $process.Dispose()
+        $started = $process.Start()
     }
     catch {
+        $process.Dispose()
         throw 'git is unavailable'
     }
+    if (-not $started) {
+        $process.Dispose()
+        throw 'git is unavailable'
+    }
+
+    $standardOutput = $process.StandardOutput.ReadToEndAsync()
+    $standardError = $process.StandardError.ReadToEndAsync()
+    if (-not $process.WaitForExit($GitCommandTimeoutMilliseconds)) {
+        try {
+            $process.Kill($true)
+        }
+        catch {
+            # Preserve the deterministic timeout classification even when the
+            # platform reports that the process exited during cancellation.
+        }
+        $process.WaitForExit()
+        $null = $standardOutput.GetAwaiter().GetResult()
+        $null = $standardError.GetAwaiter().GetResult()
+        $process.Dispose()
+        throw 'git command timed out'
+    }
+
+    $stdout = $standardOutput.GetAwaiter().GetResult()
+    $null = $standardError.GetAwaiter().GetResult()
+    $exitCode = $process.ExitCode
+    $process.Dispose()
 
     if ($AllowedExitCodes -notcontains $exitCode) {
         throw 'git command failed'
@@ -110,6 +129,9 @@ function Resolve-Commit {
         )
     }
     catch {
+        if ($_.Exception.Message -ceq 'git command timed out') {
+            throw "$Label ref resolution timed out"
+        }
         throw "$Label ref does not resolve to a commit"
     }
 
@@ -143,6 +165,9 @@ function Get-NonNegativeCount {
         $count
     }
     catch {
+        if ($_.Exception.Message -ceq 'git command timed out') {
+            throw "$Label commit count timed out"
+        }
         throw "cannot compute $Label commit count"
     }
 }
@@ -191,6 +216,9 @@ function Get-ConflictForecast {
         ) -AllowedExitCodes @(0, 1)
     }
     catch {
+        if ($_.Exception.Message -ceq 'git command timed out') {
+            throw 'merge forecast timed out'
+        }
         throw 'merge forecast failed'
     }
 
@@ -260,6 +288,9 @@ try {
         $insideWorkTree = Invoke-GitCapture -Arguments @('rev-parse', '--is-inside-work-tree')
     }
     catch {
+        if ($_.Exception.Message -ceq 'git command timed out') {
+            throw 'repository verification timed out'
+        }
         throw 'current directory is not a Git worktree'
     }
     if ($insideWorkTree.StdOut.Trim() -cne 'true') {
@@ -277,6 +308,9 @@ try {
         $mergeBaseResult = Invoke-GitCapture -Arguments @('merge-base', $forkCommit, $upstreamCommit)
     }
     catch {
+        if ($_.Exception.Message -ceq 'git command timed out') {
+            throw 'merge-base calculation timed out'
+        }
         throw 'fork and upstream commits do not share a merge base'
     }
     $mergeBase = $mergeBaseResult.StdOut.Trim()
