@@ -62,7 +62,8 @@
       "last_transition_at": "2026-09-02T21:15:56.355094+00:00",
       "model": "__resolved_model_absent__",
       "notes": [
-        "Ready for independent review: test-first commits e281d33/a920c7b; Windows manual acceptance passed all contract scenarios and repository-state invariants; PowerShell parse and git diff --check passed; baseline remains 1 pre-existing synthetic JUnit-capture failure; Go suite and Linux pwsh are unexecuted because Go/Linux are unavailable; exact pr-preflight shell is unexecuted because WSL bash is unavailable, with equivalent gh overlap searches clear."
+        "Ready for independent review: test-first commits e281d33/a920c7b; Windows manual acceptance passed all contract scenarios and repository-state invariants; PowerShell parse and git diff --check passed; baseline remains 1 pre-existing synthetic JUnit-capture failure; Go suite and Linux pwsh are unexecuted because Go/Linux are unavailable; exact pr-preflight shell is unexecuted because WSL bash is unavailable, with equivalent gh overlap searches clear.",
+        "Cycle-1 rework ready: commits 1d487ca/456a497/78f6084; production Git waits bounded at 15s with sanitized kill/drain diagnostics; test subprocesses bounded at 15s with separate exit/stdout/stderr capture; Windows verifier C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp02-bounded-verifier.ps1 completed 15/15 invocations, 0 timeouts, 0 failures, all state_unchanged=true, credential scan clean; result C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp02-bounded-eef8856238544f3b9254d87a22b25c33\\verification-results.json. Go/Linux/bash/jq remain unavailable; gate no_coverage and synthetic JUnit failure are not green."
       ],
       "provider": "__resolved_provider_absent__",
       "review": null,
