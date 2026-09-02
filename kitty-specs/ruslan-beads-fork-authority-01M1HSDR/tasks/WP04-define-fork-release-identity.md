@@ -11,7 +11,7 @@ requirement_refs:
 - FR-008
 planning_base_branch: codex/beads-fork-authority
 merge_target_branch: codex/beads-fork-authority
-branch_strategy: Implement in the computed WP04 lane after WP02; WP04 may proceed parallel to WP03 because ownership does not overlap.
+branch_strategy: Planning artifacts for this mission were generated on codex/beads-fork-authority. During /spec-kitty.implement this WP may branch from a dependency-specific base, but completed changes must merge back into codex/beads-fork-authority unless the human explicitly redirects the landing branch.
 subtasks:
 - T013
 - T014

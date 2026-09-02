@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Ruslan Beads Fork Authority
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning  
-**Created**: 2026-09-02  
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2026-09-02
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality

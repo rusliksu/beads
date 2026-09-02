@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rusliksu/beads/contracts/fork-sync-manifest.schema.json",
+  "title": "Fork Sync Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "generated_at",
+    "fork_repository",
+    "fork_base_sha",
+    "upstream_repository",
+    "upstream_head_sha",
+    "merge_base_sha",
+    "fork_only_commits",
+    "upstream_only_commits",
+    "conflicts",
+    "behavior_equivalence",
+    "candidate_status",
+    "blockers"
+  ],
+  "properties": {
+    "schema": {"const": "fork-sync-manifest/v1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "fork_repository": {"const": "rusliksu/beads"},
+    "fork_base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "upstream_repository": {"const": "gastownhall/beads"},
+    "upstream_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "merge_base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "fork_only_commits": {"type": "integer", "minimum": 0},
+    "upstream_only_commits": {"type": "integer", "minimum": 0},
+    "conflicts": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "behavior_equivalence": {"enum": ["unchanged", "unknown", "divergent"]},
+    "candidate_status": {"enum": ["ready_for_pr", "blocked", "already_identical"]},
+    "blockers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  }
+}
