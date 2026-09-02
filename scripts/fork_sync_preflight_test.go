@@ -1,6 +1,8 @@
 package scripts_test
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +16,8 @@ import (
 	"testing"
 	"time"
 )
+
+const forkSyncProcessTimeout = 15 * time.Second
 
 type forkSyncManifest struct {
 	Schema              string   `json:"schema"`
@@ -39,8 +43,12 @@ type forkSyncFixture struct {
 type forkSyncRun struct {
 	manifest forkSyncManifest
 	raw      map[string]json.RawMessage
+	stdout   string
+	stderr   string
 	output   string
 	err      error
+	exitCode int
+	timedOut bool
 }
 
 func TestForkSyncPreflightClassifiesPinnedComparisons(t *testing.T) {
@@ -82,6 +90,9 @@ func TestForkSyncPreflightClassifiesPinnedComparisons(t *testing.T) {
 			t.Fatalf("fork divergence classified as status=%q equivalence=%q", run.manifest.CandidateStatus, run.manifest.BehaviorEquivalence)
 		}
 		requireString(t, run.manifest.Blockers, "fork_only_commits")
+		if !reflect.DeepEqual(run.manifest.Blockers, []string{"behavior_equivalence_unknown", "fork_only_commits", "no_upstream_commits"}) {
+			t.Fatalf("blockers are not sorted and unique: %v", run.manifest.Blockers)
+		}
 
 		explicit := runForkSyncPreflight(t, fixture.dir, "unchanged", "refs/remotes/origin/main", "refs/remotes/upstream/main")
 		requireForkSyncSuccess(t, explicit)
@@ -124,6 +135,47 @@ func TestForkSyncPreflightClassifiesPinnedComparisons(t *testing.T) {
 		}
 		requireString(t, run.manifest.Blockers, "merge_conflicts")
 	})
+
+	t.Run("multiple conflict paths are sorted and unique", func(t *testing.T) {
+		fixture := newForkSyncFixture(t)
+		fork := fixture.commitFrom(t, fixture.base, "z-shared.txt", "fork z\n")
+		fork = fixture.commitFrom(t, fork, "a-shared.txt", "fork a\n")
+		upstream := fixture.commitFrom(t, fixture.base, "z-shared.txt", "upstream z\n")
+		upstream = fixture.commitFrom(t, upstream, "a-shared.txt", "upstream a\n")
+		fixture.setRef(t, "refs/remotes/origin/main", fork)
+		fixture.setRef(t, "refs/remotes/upstream/main", upstream)
+
+		run := runForkSyncPreflight(t, fixture.dir, "unchanged", "refs/remotes/origin/main", "refs/remotes/upstream/main")
+		requireForkSyncSuccess(t, run)
+		if !reflect.DeepEqual(run.manifest.Conflicts, []string{"a-shared.txt", "z-shared.txt"}) {
+			t.Fatalf("conflicts are not sorted and unique: %v", run.manifest.Conflicts)
+		}
+	})
+}
+
+func TestForkSyncPreflightResolvesAnnotatedTagsAndShortSHAs(t *testing.T) {
+	fixture := newForkSyncFixture(t)
+	fixture.git(t, nil, "tag", "-a", "fork-baseline", "-m", "annotated baseline", fixture.base)
+	shortSHA := fixture.base[:12]
+
+	run := runForkSyncPreflight(t, fixture.dir, "unknown", "refs/tags/fork-baseline", shortSHA)
+	requireForkSyncSuccess(t, run)
+	if run.manifest.CandidateStatus != "already_identical" || run.manifest.ForkBaseSHA != fixture.base || run.manifest.UpstreamHeadSHA != fixture.base {
+		t.Fatalf("commit-ish inputs did not resolve to the exact commit: %+v", run.manifest)
+	}
+}
+
+func TestForkSyncPreflightRejectsUnrelatedHistories(t *testing.T) {
+	fixture := newForkSyncFixture(t)
+	tree := strings.TrimSpace(fixture.git(t, nil, "rev-parse", "HEAD^{tree}"))
+	unrelated := strings.TrimSpace(fixture.git(t, nil, "commit-tree", tree, "-m", "unrelated root"))
+	fixture.setRef(t, "refs/remotes/upstream/main", unrelated)
+
+	run := runForkSyncPreflight(t, fixture.dir, "unchanged", "refs/remotes/origin/main", "refs/remotes/upstream/main")
+	requireForkSyncFailure(t, run)
+	if !strings.Contains(run.output, "fork and upstream commits do not share a merge base") {
+		t.Fatalf("unrelated histories did not produce the bounded diagnostic: %s", run.output)
+	}
 }
 
 func TestForkSyncPreflightRejectsInvalidRefsDeterministically(t *testing.T) {
@@ -182,6 +234,20 @@ func TestForkSyncPreflightNoFetchLeavesRepositoryStateUnchanged(t *testing.T) {
 	afterBothModes := fixture.snapshot(t)
 	if before != afterBothModes {
 		t.Fatalf("repository state changed with explicit or default no-fetch semantics:\n--- before ---\n%s\n--- after ---\n%s", before, afterBothModes)
+	}
+}
+
+func TestForkSyncPreflightPreservesDirtyWorktree(t *testing.T) {
+	fixture := newForkSyncFixture(t)
+	writeForkSyncFile(t, fixture.dir, "shared.txt", "dirty tracked content\n")
+	writeForkSyncFile(t, fixture.dir, "untracked.txt", "dirty untracked content\n")
+	before := fixture.snapshot(t)
+
+	run := runForkSyncPreflight(t, fixture.dir, "unknown", "refs/remotes/origin/main", "refs/remotes/upstream/main")
+	requireForkSyncSuccess(t, run)
+	after := fixture.snapshot(t)
+	if before != after {
+		t.Fatalf("dirty repository state changed:\n--- before ---\n%s\n--- after ---\n%s", before, after)
 	}
 }
 
@@ -247,7 +313,9 @@ func newForkSyncFixture(t *testing.T) *forkSyncFixture {
 	runGit(t, dir, nil, "config", "user.name", "Fork Sync Test")
 	runGit(t, dir, nil, "config", "user.email", "fork-sync-test@example.invalid")
 	writeForkSyncFile(t, dir, "shared.txt", "base\n")
-	runGit(t, dir, nil, "add", "shared.txt")
+	writeForkSyncFile(t, dir, "a-shared.txt", "base a\n")
+	writeForkSyncFile(t, dir, "z-shared.txt", "base z\n")
+	runGit(t, dir, nil, "add", "shared.txt", "a-shared.txt", "z-shared.txt")
 	runGit(t, dir, nil, "commit", "-m", "base")
 	base := strings.TrimSpace(runGit(t, dir, nil, "rev-parse", "HEAD"))
 	fixture := &forkSyncFixture{dir: dir, base: base}
@@ -322,19 +390,42 @@ func runForkSyncPreflightWithFlag(t *testing.T, repo, equivalence, forkRef, upst
 	if includeNoFetch {
 		arguments = append(arguments, "-NoFetch")
 	}
-	cmd := exec.Command(pwsh, arguments...)
+	ctx, cancel := context.WithTimeout(context.Background(), forkSyncProcessTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, pwsh, arguments...)
 	cmd.Dir = repo
-	combined, runErr := cmd.CombinedOutput()
-	run := forkSyncRun{output: string(combined), err: runErr}
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	runErr := cmd.Run()
+	run := forkSyncRun{
+		stdout: stdout.String(),
+		stderr: stderr.String(),
+		output: stdout.String() + stderr.String(),
+		err:    runErr,
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		run.timedOut = true
+		run.err = fmt.Errorf("fork sync preflight exceeded %s: %w", forkSyncProcessTimeout, ctx.Err())
+	}
 	if runErr != nil {
+		var exitErr *exec.ExitError
+		if errors.As(runErr, &exitErr) {
+			run.exitCode = exitErr.ExitCode()
+		} else {
+			run.exitCode = -1
+		}
+	}
+	if run.err != nil {
 		return run
 	}
 	body, err := os.ReadFile(outputPath)
 	if err != nil {
-		t.Fatalf("read fork sync manifest: %v\ncommand output: %s", err, combined)
+		t.Fatalf("read fork sync manifest: %v\nstdout: %s\nstderr: %s", err, run.stdout, run.stderr)
 	}
 	if err := json.Unmarshal(body, &run.manifest); err != nil {
-		t.Fatalf("decode fork sync manifest: %v\nmanifest: %s\ncommand output: %s", err, body, combined)
+		t.Fatalf("decode fork sync manifest: %v\nmanifest: %s\nstdout: %s\nstderr: %s", err, body, run.stdout, run.stderr)
 	}
 	if err := json.Unmarshal(body, &run.raw); err != nil {
 		t.Fatalf("decode raw fork sync manifest: %v\nmanifest: %s", err, body)
@@ -344,19 +435,31 @@ func runForkSyncPreflightWithFlag(t *testing.T, repo, equivalence, forkRef, upst
 
 func requireForkSyncSuccess(t *testing.T, run forkSyncRun) {
 	t.Helper()
+	if run.timedOut {
+		t.Fatalf("fork sync preflight timed out\nstdout: %s\nstderr: %s", run.stdout, run.stderr)
+	}
 	if run.err != nil {
-		t.Fatalf("fork sync preflight failed: %v\n%s", run.err, run.output)
+		t.Fatalf("fork sync preflight failed: %v\nstdout: %s\nstderr: %s", run.err, run.stdout, run.stderr)
+	}
+	if run.exitCode != 0 {
+		t.Fatalf("fork sync preflight success recorded exit code %d", run.exitCode)
 	}
 }
 
 func requireForkSyncFailure(t *testing.T, run forkSyncRun) {
 	t.Helper()
+	if run.timedOut {
+		t.Fatalf("fork sync preflight timed out instead of returning a bounded failure\nstdout: %s\nstderr: %s", run.stdout, run.stderr)
+	}
 	if run.err == nil {
 		t.Fatalf("fork sync preflight unexpectedly succeeded: %+v\n%s", run.manifest, run.output)
 	}
 	var exitErr *exec.ExitError
 	if !errors.As(run.err, &exitErr) || exitErr.ExitCode() == 0 {
 		t.Fatalf("fork sync preflight did not return a deterministic non-zero process exit: %v\n%s", run.err, run.output)
+	}
+	if run.exitCode != exitErr.ExitCode() {
+		t.Fatalf("captured exit code = %d, process exit = %d", run.exitCode, exitErr.ExitCode())
 	}
 }
 
@@ -381,14 +484,23 @@ func marshalForkSyncManifest(t *testing.T, manifest forkSyncManifest) string {
 
 func runGit(t *testing.T, dir string, stdin []byte, args ...string) string {
 	t.Helper()
-	cmd := exec.Command("git", args...)
+	ctx, cancel := context.WithTimeout(context.Background(), forkSyncProcessTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	cmd.Stdin = strings.NewReader(string(stdin))
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("git %s failed: %v\n%s", strings.Join(args, " "), err, output)
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if ctx.Err() == context.DeadlineExceeded {
+		t.Fatalf("git %s timed out after %s\nstdout: %s\nstderr: %s", strings.Join(args, " "), forkSyncProcessTimeout, stdout.String(), stderr.String())
 	}
-	return string(output)
+	if err != nil {
+		t.Fatalf("git %s failed: %v\nstdout: %s\nstderr: %s", strings.Join(args, " "), err, stdout.String(), stderr.String())
+	}
+	return stdout.String()
 }
 
 func writeForkSyncFile(t *testing.T, root, relative, body string) {
