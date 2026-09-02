@@ -38,6 +38,7 @@ type forkSyncFixture struct {
 
 type forkSyncRun struct {
 	manifest forkSyncManifest
+	raw      map[string]json.RawMessage
 	output   string
 	err      error
 }
@@ -81,6 +82,13 @@ func TestForkSyncPreflightClassifiesPinnedComparisons(t *testing.T) {
 			t.Fatalf("fork divergence classified as status=%q equivalence=%q", run.manifest.CandidateStatus, run.manifest.BehaviorEquivalence)
 		}
 		requireString(t, run.manifest.Blockers, "fork_only_commits")
+
+		explicit := runForkSyncPreflight(t, fixture.dir, "unchanged", "refs/remotes/origin/main", "refs/remotes/upstream/main")
+		requireForkSyncSuccess(t, explicit)
+		if explicit.manifest.CandidateStatus != "blocked" {
+			t.Fatalf("explicit equivalence bypassed fork-only divergence: status=%q", explicit.manifest.CandidateStatus)
+		}
+		requireString(t, explicit.manifest.Blockers, "fork_only_commits")
 	})
 
 	t.Run("both sides changed without conflict stays blocked", func(t *testing.T) {
@@ -169,9 +177,11 @@ func TestForkSyncPreflightNoFetchLeavesRepositoryStateUnchanged(t *testing.T) {
 
 	run := runForkSyncPreflight(t, fixture.dir, "unknown", "refs/remotes/origin/main", "refs/remotes/upstream/main")
 	requireForkSyncSuccess(t, run)
-	after := fixture.snapshot(t)
-	if before != after {
-		t.Fatalf("repository state changed in -NoFetch mode:\n--- before ---\n%s\n--- after ---\n%s", before, after)
+	withoutFlag := runForkSyncPreflightWithFlag(t, fixture.dir, "unknown", "refs/remotes/origin/main", "refs/remotes/upstream/main", false)
+	requireForkSyncSuccess(t, withoutFlag)
+	afterBothModes := fixture.snapshot(t)
+	if before != afterBothModes {
+		t.Fatalf("repository state changed with explicit or default no-fetch semantics:\n--- before ---\n%s\n--- after ---\n%s", before, afterBothModes)
 	}
 }
 
@@ -197,6 +207,29 @@ func TestForkSyncPreflightManifestSchemaAndRepeatability(t *testing.T) {
 	}
 	if _, err := time.Parse(time.RFC3339Nano, first.manifest.GeneratedAt); err != nil {
 		t.Fatalf("generated_at = %q, want RFC3339 timestamp: %v", first.manifest.GeneratedAt, err)
+	}
+	expectedFields := []string{
+		"schema",
+		"generated_at",
+		"fork_repository",
+		"fork_base_sha",
+		"upstream_repository",
+		"upstream_head_sha",
+		"merge_base_sha",
+		"fork_only_commits",
+		"upstream_only_commits",
+		"conflicts",
+		"behavior_equivalence",
+		"candidate_status",
+		"blockers",
+	}
+	if len(first.raw) != len(expectedFields) {
+		t.Fatalf("manifest has %d fields, want %d: %v", len(first.raw), len(expectedFields), first.raw)
+	}
+	for _, field := range expectedFields {
+		if _, ok := first.raw[field]; !ok {
+			t.Errorf("manifest is missing required field %q", field)
+		}
 	}
 
 	first.manifest.GeneratedAt = ""
@@ -261,18 +294,22 @@ func (fixture *forkSyncFixture) snapshot(t *testing.T) string {
 
 func runForkSyncPreflight(t *testing.T, repo, equivalence, forkRef, upstreamRef string) forkSyncRun {
 	t.Helper()
+	return runForkSyncPreflightWithFlag(t, repo, equivalence, forkRef, upstreamRef, true)
+}
+
+func runForkSyncPreflightWithFlag(t *testing.T, repo, equivalence, forkRef, upstreamRef string, includeNoFetch bool) forkSyncRun {
+	t.Helper()
 	pwsh, err := exec.LookPath("pwsh")
 	if err != nil {
 		t.Fatalf("PowerShell 7 is required for the fork sync contract: %v", err)
 	}
-	_, sourceFile, _, ok := runtimeCaller()
+	_, sourceFile, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("cannot resolve fork sync test source path")
 	}
 	script := filepath.Join(filepath.Dir(sourceFile), "fork-sync-preflight.ps1")
 	outputPath := filepath.Join(t.TempDir(), "fork-sync-manifest.json")
-	cmd := exec.Command(
-		pwsh,
+	arguments := []string{
 		"-NoLogo",
 		"-NoProfile",
 		"-NonInteractive",
@@ -281,8 +318,11 @@ func runForkSyncPreflight(t *testing.T, repo, equivalence, forkRef, upstreamRef 
 		"-UpstreamRef", upstreamRef,
 		"-OutputPath", outputPath,
 		"-BehaviorEquivalence", equivalence,
-		"-NoFetch",
-	)
+	}
+	if includeNoFetch {
+		arguments = append(arguments, "-NoFetch")
+	}
+	cmd := exec.Command(pwsh, arguments...)
 	cmd.Dir = repo
 	combined, runErr := cmd.CombinedOutput()
 	run := forkSyncRun{output: string(combined), err: runErr}
@@ -296,13 +336,10 @@ func runForkSyncPreflight(t *testing.T, repo, equivalence, forkRef, upstreamRef 
 	if err := json.Unmarshal(body, &run.manifest); err != nil {
 		t.Fatalf("decode fork sync manifest: %v\nmanifest: %s\ncommand output: %s", err, body, combined)
 	}
+	if err := json.Unmarshal(body, &run.raw); err != nil {
+		t.Fatalf("decode raw fork sync manifest: %v\nmanifest: %s", err, body)
+	}
 	return run
-}
-
-// runtimeCaller is a small seam so tests locate the sibling PowerShell file
-// independent of the process working directory used by `go test`.
-var runtimeCaller = func() (uintptr, string, int, bool) {
-	return runtime.Caller(0)
 }
 
 func requireForkSyncSuccess(t *testing.T, run forkSyncRun) {
