@@ -1,0 +1,89 @@
+{
+  "mission_slug": "ruslan-beads-fork-authority-01M1HSDR",
+  "mission_number": "",
+  "mission_type": "software-dev",
+  "overall_verdict": "pass",
+  "criteria": [
+    {
+      "criterion_id": "FR-001",
+      "description": "Verify FR-001 is satisfied",
+      "proof_type": "code_review",
+      "evidence": "kitty-specs/ruslan-beads-fork-authority-01M1HSDR/tasks/WP01-persist-fork-governance-bootstrap/review-cycle-1.md",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:37:55.436118+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-002",
+      "description": "Verify FR-002 is satisfied",
+      "proof_type": "automated_test",
+      "evidence": "C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp02-bounded-eef8856238544f3b9254d87a22b25c33\\verification-results.json",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:00.746183+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-003",
+      "description": "Verify FR-003 is satisfied",
+      "proof_type": "code_review",
+      "evidence": "https://github.com/rusliksu/beads/pull/2",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:05.963246+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-004",
+      "description": "Verify FR-004 is satisfied",
+      "proof_type": "automated_test",
+      "evidence": "kitty-specs/ruslan-beads-fork-authority-01M1HSDR/tasks/WP02-produce-sync-provenance-manifest/review-cycle-2.md",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:11.180570+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-005",
+      "description": "Verify FR-005 is satisfied",
+      "proof_type": "automated_test",
+      "evidence": "https://github.com/rusliksu/beads/actions/runs/33723364240",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:16.318547+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-006",
+      "description": "Verify FR-006 is satisfied",
+      "proof_type": "automated_test",
+      "evidence": "C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp02-bounded-eef8856238544f3b9254d87a22b25c33\\verification-results.json",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:21.754079+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-007",
+      "description": "Verify FR-007 is satisfied",
+      "proof_type": "automated_test",
+      "evidence": "C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp04-green-23842e3388a3453e9d24ebaa29140d7c",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:27.071659+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    },
+    {
+      "criterion_id": "FR-008",
+      "description": "Verify FR-008 is satisfied",
+      "proof_type": "automated_test",
+      "evidence": "kitty-specs/ruslan-beads-fork-authority-01M1HSDR/tasks/WP04-define-fork-release-identity/review-cycle-2.md",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:32.269566+00:00",
+      "notes": "TODO: replace with a real acceptance criterion"
+    }
+  ],
+  "negative_invariants": []
+}
