@@ -97,6 +97,24 @@ func TestForkReleaseIdentityAcceptsSchemaConformantCandidate(t *testing.T) {
 	}
 }
 
+func TestForkReleaseIdentityRejectsExistingOutputWithoutModification(t *testing.T) {
+	outputPath := filepath.Join(t.TempDir(), "identity.json")
+	sentinel := []byte("existing identity evidence must remain byte-for-byte unchanged\n")
+	if err := os.WriteFile(outputPath, sentinel, 0o600); err != nil {
+		t.Fatalf("write sentinel output: %v", err)
+	}
+
+	run := runForkReleaseIdentity(t, validForkReleaseIdentityInput(), outputPath)
+	requireForkReleaseIdentityFailure(t, run)
+	body, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatalf("read sentinel output: %v", err)
+	}
+	if !bytes.Equal(body, sentinel) {
+		t.Fatalf("valid collision modified existing evidence:\n got: %q\nwant: %q", body, sentinel)
+	}
+}
+
 func TestForkReleaseIdentityRejectsAmbiguousOrIncompleteInputs(t *testing.T) {
 	tests := []struct {
 		name   string
