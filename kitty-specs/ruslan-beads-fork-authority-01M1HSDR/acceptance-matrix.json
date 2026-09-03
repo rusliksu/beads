@@ -38,10 +38,10 @@
       "criterion_id": "FR-004",
       "description": "Verify FR-004 is satisfied",
       "proof_type": "automated_test",
-      "evidence": null,
-      "pass_fail": "pending",
-      "verified_by": null,
-      "verified_at": null,
+      "evidence": "kitty-specs/ruslan-beads-fork-authority-01M1HSDR/tasks/WP02-produce-sync-provenance-manifest/review-cycle-2.md",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:11.180570+00:00",
       "notes": "TODO: replace with a real acceptance criterion"
     },
     {
