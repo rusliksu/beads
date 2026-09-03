@@ -4,7 +4,7 @@
   "flattened": false,
   "friendly_name": "Ruslan Beads Fork Authority",
   "mission_id": "01M1HSDRP5DX8BAKFSMVFP9FYZ",
-  "mission_number": null,
+  "mission_number": 1,
   "mission_slug": "ruslan-beads-fork-authority-01M1HSDR",
   "mission_type": "software-dev",
   "pr_bound": true,
