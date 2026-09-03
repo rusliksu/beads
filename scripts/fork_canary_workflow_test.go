@@ -93,7 +93,7 @@ func validateForkCanaryWorkflow(body string) []string {
 	require(timeoutMatch != nil, "per-job timeout-minutes is required")
 	if timeoutMatch != nil {
 		minutes, err := strconv.Atoi(timeoutMatch[1])
-		require(err == nil || minutes <= 15, "per-job timeout must be 15 minutes or tighter")
+		require(err == nil && minutes <= 15, "per-job timeout must be 15 minutes or tighter")
 	}
 
 	require(strings.Contains(body, "BD_DISABLE_METRICS: \"1\""), "metrics must be disabled")
@@ -113,7 +113,7 @@ func validateForkCanaryWorkflow(body string) []string {
 	require(retentionMatch != nil, "artifact retention must be explicit")
 	if retentionMatch != nil {
 		days, err := strconv.Atoi(retentionMatch[1])
-		require(err == nil || days <= 7, "artifact retention must be seven days or shorter")
+		require(err == nil && days <= 7, "artifact retention must be seven days or shorter")
 	}
 	require(regexp.MustCompile(`(?m)^\s+name:\s*fork-canary-\$\{\{ matrix\.platform \}\}-\$\{\{ env\.CANDIDATE_SHA \}\}\s*$`).MatchString(body), "artifact name must include platform and candidate SHA")
 
