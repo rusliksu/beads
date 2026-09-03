@@ -260,7 +260,7 @@ func TestForkSyncPreflightManifestSchemaAndRepeatability(t *testing.T) {
 
 	shaPattern := regexp.MustCompile(`^[0-9a-f]{40}$`)
 	for field, value := range map[string]string{
-		"fork_base_sha":      first.manifest.ForkBaseSHA,
+		"fork_base_sha":     first.manifest.ForkBaseSHA,
 		"upstream_head_sha": first.manifest.UpstreamHeadSHA,
 		"merge_base_sha":    first.manifest.MergeBaseSHA,
 	} {
