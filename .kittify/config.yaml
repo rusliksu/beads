@@ -1,0 +1,17 @@
+project:
+  uuid: 0144694d-1d90-49d9-91b0-afb143b40581
+  slug: beads
+  node_id: 382fd5d906cc
+  build_id: a01b2536-3f62-57cc-9c9b-8de3cbe889c4
+mission_type_activations:
+- software-dev
+- documentation
+- research
+- plan
+vcs:
+  type: git
+agents:
+  available:
+  - codex
+  auto_commit: true
+  lint_on_edit: false

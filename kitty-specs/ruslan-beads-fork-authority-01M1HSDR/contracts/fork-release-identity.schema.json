@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rusliksu/beads/contracts/fork-release-identity.schema.json",
+  "title": "Fork Release Identity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_version",
+    "upstream_version",
+    "sequence",
+    "fork_sha",
+    "upstream_sha",
+    "published",
+    "installed"
+  ],
+  "properties": {
+    "schema": {"const": "fork-release-identity/v1"},
+    "candidate_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-ruslan\\.[1-9][0-9]*\\+upstream\\.[0-9a-f]{7,12}$"},
+    "upstream_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "fork_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "upstream_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "published": {"const": false},
+    "installed": {"const": false}
+  }
+}

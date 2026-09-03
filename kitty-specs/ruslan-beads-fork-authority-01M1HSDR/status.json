@@ -1,0 +1,85 @@
+{
+  "event_count": 38,
+  "last_event_id": "01M1K0534GN8H2JT9FMSJSS96E",
+  "materialized_at": "2026-09-03T06:43:58.224543+00:00",
+  "mission_number": "",
+  "mission_slug": "ruslan-beads-fork-authority-01M1HSDR",
+  "mission_type": "",
+  "summary": {
+    "approved": 0,
+    "blocked": 0,
+    "canceled": 0,
+    "claimed": 0,
+    "done": 4,
+    "for_review": 0,
+    "in_progress": 0,
+    "in_review": 0,
+    "planned": 0
+  },
+  "work_packages": {
+    "WP01": {
+      "actor": "merge",
+      "agent": "codex",
+      "force_count": 0,
+      "lane": "done",
+      "last_event_id": "01M1K04VEAC1V56V4MZ36DZDDT",
+      "last_transition_at": "2026-09-03T06:43:50.346313+00:00",
+      "review_result": {
+        "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP01-persist-fork-governance-bootstrap\\review-cycle-1.md",
+        "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP01-persist-fork-governance-bootstrap/review-cycle-1.md",
+        "reviewer": "user",
+        "verdict": "approved"
+      },
+      "shell_pid": 9176,
+      "shell_pid_created_at": "1788379292.45759"
+    },
+    "WP02": {
+      "actor": "merge",
+      "agent": "codex",
+      "force_count": 1,
+      "lane": "done",
+      "last_event_id": "01M1K04XZQHCQZCFNZB323XWYW",
+      "last_transition_at": "2026-09-03T06:43:52.951305+00:00",
+      "review_result": {
+        "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP02-produce-sync-provenance-manifest\\review-cycle-2.md",
+        "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP02-produce-sync-provenance-manifest/review-cycle-2.md",
+        "reviewer": "user",
+        "verdict": "approved"
+      },
+      "shell_pid": 29004,
+      "shell_pid_created_at": "1788383178.8695536"
+    },
+    "WP03": {
+      "actor": "merge",
+      "agent": "codex",
+      "force_count": 0,
+      "lane": "done",
+      "last_event_id": "01M1K050GY214KN0YQPV680E12",
+      "last_transition_at": "2026-09-03T06:43:55.550778+00:00",
+      "review_result": {
+        "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP03-add-fork-candidate-build-canary\\review-cycle-1.md",
+        "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP03-add-fork-candidate-build-canary/review-cycle-1.md",
+        "reviewer": "user",
+        "verdict": "approved"
+      },
+      "shell_pid": 25848,
+      "shell_pid_created_at": "1788414245.0304477"
+    },
+    "WP04": {
+      "actor": "merge",
+      "agent": "codex",
+      "force_count": 1,
+      "lane": "done",
+      "last_event_id": "01M1K0534GN8H2JT9FMSJSS96E",
+      "last_transition_at": "2026-09-03T06:43:58.224543+00:00",
+      "review_result": {
+        "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP04-define-fork-release-identity\\review-cycle-2.md",
+        "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP04-define-fork-release-identity/review-cycle-2.md",
+        "reviewer": "user",
+        "verdict": "approved"
+      },
+      "shell_pid": 27080,
+      "shell_pid_created_at": "1788415690.763317"
+    }
+  }
+}
