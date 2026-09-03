@@ -1,4 +1,5 @@
 {
+  "baseline_merge_commit": "1b52e126fc4c62b18469048b64f72ed120d635fc",
   "coordination_branch": "kitty/mission-ruslan-beads-fork-authority-01M1HSDR",
   "created_at": "2026-09-02T19:27:07.984764+00:00",
   "flattened": false,
@@ -11,6 +12,7 @@
   "purpose_context": "Ruslan needs a self-owned Beads distribution that can consume upstream safely while remaining compatible with the Spec Kitty fork. The fork begins behavior-identical to upstream, owns its tracker and release identity, accepts upstream updates only through reviewed pull requests, and proves Windows and Linux build compatibility before any active bd replacement.",
   "purpose_tldr": "Make Ruslan's Beads fork reproducible and independently maintainable without premature behavior divergence.",
   "slug": "ruslan-beads-fork-authority-01M1HSDR",
+  "status_phase": "1",
   "target_branch": "codex/beads-fork-authority",
   "topology": "coord",
   "vcs": "git",

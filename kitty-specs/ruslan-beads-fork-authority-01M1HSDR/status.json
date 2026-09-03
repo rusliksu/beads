@@ -2,9 +2,9 @@
   "event_count": 38,
   "last_event_id": "01M1K0534GN8H2JT9FMSJSS96E",
   "materialized_at": "2026-09-03T06:43:58.224543+00:00",
-  "mission_number": "1",
+  "mission_number": "",
   "mission_slug": "ruslan-beads-fork-authority-01M1HSDR",
-  "mission_type": "software-dev",
+  "mission_type": "",
   "summary": {
     "approved": 0,
     "blocked": 0,
@@ -20,136 +20,66 @@
     "WP01": {
       "actor": "merge",
       "agent": "codex",
-      "agent_profile": "__resolved_profile_absent__",
-      "agent_profile_version": "__resolved_profile_version_absent__",
       "force_count": 0,
       "lane": "done",
       "last_event_id": "01M1K04VEAC1V56V4MZ36DZDDT",
       "last_transition_at": "2026-09-03T06:43:50.346313+00:00",
-      "model": "__resolved_model_absent__",
-      "notes": [
-        "Ready for review: implementation d0e12719 and lane-hygiene cleanup 035459c; doctor/context/diff/doc-freshness passed; contributor preflight and docsync are explicitly unexecuted because jq and Go are unavailable.",
-        "Review passed: scoped docs/bootstrap only; FR-001/003/008 assertions, relative links, doctor skills, mission context, diff check, ignore protections, sensitive-path scan, and docs freshness passed. Canonical pr-preflight was invoked but unexecuted because jq is absent; equivalent live GitHub prior-art triage found only unrelated PR #4844. Go docsync remained unexecuted and pre-review gate was no_coverage, not green coverage; acceptable here because WP01 changes no product/runtime code and manual contract checks passed."
-      ],
-      "provider": "__resolved_provider_absent__",
       "review_result": {
         "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP01-persist-fork-governance-bootstrap\\review-cycle-1.md",
         "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP01-persist-fork-governance-bootstrap/review-cycle-1.md",
         "reviewer": "user",
         "verdict": "approved"
       },
-      "role": "reviewer",
-      "shell_pid": 23632,
-      "shell_pid_created_at": "1788380442.8146644",
-      "subtasks": {
-        "T001": "done",
-        "T002": "done",
-        "T003": "done",
-        "T004": "done"
-      },
-      "tracker_refs": [
-        "https://github.com/rusliksu/beads/issues/1"
-      ]
+      "shell_pid": 9176,
+      "shell_pid_created_at": "1788379292.45759"
     },
     "WP02": {
       "actor": "merge",
       "agent": "codex",
-      "agent_profile": "__resolved_profile_absent__",
-      "agent_profile_version": "__resolved_profile_version_absent__",
       "force_count": 1,
       "lane": "done",
       "last_event_id": "01M1K04XZQHCQZCFNZB323XWYW",
       "last_transition_at": "2026-09-03T06:43:52.951305+00:00",
-      "model": "__resolved_model_absent__",
-      "notes": [
-        "Ready for independent review: test-first commits e281d33/a920c7b; Windows manual acceptance passed all contract scenarios and repository-state invariants; PowerShell parse and git diff --check passed; baseline remains 1 pre-existing synthetic JUnit-capture failure; Go suite and Linux pwsh are unexecuted because Go/Linux are unavailable; exact pr-preflight shell is unexecuted because WSL bash is unavailable, with equivalent gh overlap searches clear.",
-        "Cycle-1 rework ready: commits 1d487ca/456a497/78f6084; production Git waits bounded at 15s with sanitized kill/drain diagnostics; test subprocesses bounded at 15s with separate exit/stdout/stderr capture; Windows verifier C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp02-bounded-verifier.ps1 completed 15/15 invocations, 0 timeouts, 0 failures, all state_unchanged=true, credential scan clean; result C:\\Users\\Ruslan\\AppData\\Local\\Temp\\wp02-bounded-eef8856238544f3b9254d87a22b25c33\\verification-results.json. Go/Linux/bash/jq remain unavailable; gate no_coverage and synthetic JUnit failure are not green.",
-        "Review passed cycle 2: prior Windows stall blocker resolved by bounded production Git capture and bounded test subprocess capture; saved Windows verifier completed 15/15 invocations with 0 timeouts, 0 failures, all repository state invariants unchanged, exact SHA/schema and sorted deterministic evidence valid, credential scan clean, and uncertain states fail closed. Anti-patterns: dead code PASS; synthetic-fixture PASS; silent-empty-return PASS; FR coverage PASS; frozen surface PASS; locked decisions PASS; shared-file ownership N/A; production fragility PASS. PowerShell parse and scoped diff check passed. Go test, Linux pwsh, exact Bash pr-preflight, jq, no_coverage gate, and pre-existing synthetic JUnit capture remain explicitly unexecuted/non-green and are deferred to later hosted gates."
-      ],
-      "provider": "__resolved_provider_absent__",
-      "review": null,
       "review_result": {
         "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP02-produce-sync-provenance-manifest\\review-cycle-2.md",
         "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP02-produce-sync-provenance-manifest/review-cycle-2.md",
         "reviewer": "user",
         "verdict": "approved"
       },
-      "role": "reviewer",
-      "shell_pid": 7556,
-      "shell_pid_created_at": "1788383803.1200352",
-      "subtasks": {
-        "T005": "done",
-        "T006": "done",
-        "T007": "done",
-        "T008": "done"
-      }
+      "shell_pid": 29004,
+      "shell_pid_created_at": "1788383178.8695536"
     },
     "WP03": {
       "actor": "merge",
       "agent": "codex",
-      "agent_profile": "__resolved_profile_absent__",
-      "agent_profile_version": "__resolved_profile_version_absent__",
       "force_count": 0,
       "lane": "done",
       "last_event_id": "01M1K050GY214KN0YQPV680E12",
       "last_transition_at": "2026-09-03T06:43:55.550778+00:00",
-      "model": "__resolved_model_absent__",
-      "notes": [
-        "Implemented fork-only exact-candidate Windows/Linux canary in commits d24d2f4 and 0a6c1a9. Bounded Windows static contract and guard/platform mutations passed 3/3; git diff/show checks passed. Go test and check-build-tags are unexecuted because Go and WSL /bin/bash are absent; actionlint/YAML linter absent. Hosted Actions execution remains pending until separately authorized push/PR; no release/install/remote/DB mutation.",
-        "Review passed: commits d24d2f4/0a6c1a9 are test-first and scoped to the two owned files; runtime-hygiene 97f7e07 excluded from product judgment. Fork guard, PR-main/manual event scope, exact candidate SHA checkout and post-check, repository-standard full-SHA action pins, required ubuntu/windows matrix, 15-minute timeout, metrics/event-flush disablement, isolated RUNNER_TEMP build, gms_pure_go tag, explicit-path version/help smoke, checksum and SHA-bound JSON evidence, platform/SHA artifact naming, three-day retention, fail-on-missing upload, read-only permissions, and credential persistence disablement passed static review. No release/tag/publish/install/PATH/secrets or frozen/overlapping surface changes found. In-memory guard/Windows mutations were detected. Anti-patterns: dead code N/A; synthetic-fixture PASS; silent-empty-return N/A; FR coverage PASS; frozen surface PASS; locked decisions PASS; shared-file ownership N/A; production fragility PASS. Hosted Actions, Go tests, Linux execution, exact Bash pr-preflight, actionlint, yamllint, jq, pre-review no_coverage, and pre-existing synthetic JUnit capture remain pending/non-green and must execute at later authorized gates."
-      ],
-      "provider": "__resolved_provider_absent__",
       "review_result": {
         "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP03-add-fork-candidate-build-canary\\review-cycle-1.md",
         "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP03-add-fork-candidate-build-canary/review-cycle-1.md",
         "reviewer": "user",
         "verdict": "approved"
       },
-      "role": "reviewer",
-      "shell_pid": 25912,
-      "shell_pid_created_at": "1788415144.3164184",
-      "subtasks": {
-        "T009": "done",
-        "T010": "done",
-        "T011": "done",
-        "T012": "done"
-      }
+      "shell_pid": 25848,
+      "shell_pid_created_at": "1788414245.0304477"
     },
     "WP04": {
       "actor": "merge",
       "agent": "codex",
-      "agent_profile": "__resolved_profile_absent__",
-      "agent_profile_version": "__resolved_profile_version_absent__",
       "force_count": 1,
       "lane": "done",
       "last_event_id": "01M1K0534GN8H2JT9FMSJSS96E",
       "last_transition_at": "2026-09-03T06:43:58.224543+00:00",
-      "model": "__resolved_model_absent__",
-      "notes": [
-        "Implemented unpublished fork-release identity contract in commits a485b44 and 99be1db. PowerShell valid/adversarial/repeatability/state-preservation/schema/parse checks passed; git diff --check passed. Go and make gates unexecuted because tools are absent; Git Bash contributor preflight unexecuted because jq is absent, with equivalent gh prior-art search finding no overlap. Synthetic JUnit baseline remains non-green (0 passed, 1 failed: no JUnit XML). No release, install, push, remote, DB, or active-bd mutation.",
-        "Cycle 2 fixes valid-output collision without overwrite; bounded PowerShell verifier passed.",
-        "Review passed cycle 2: valid output collisions now fail nonzero without overwrite and preserve the sentinel byte-for-byte; independent bounded Windows verification passed valid new unpublished identity, repeatability, 9 adversarial fail-closed cases, no leaked temp output, and repo/env/tags/remotes/PATH/aliases/installed-bd invariants. Test-first and implementation commits are scoped to test/helper; runtime cleanup is separate; PowerShell parse and diff check pass; no release/tag/install/push/active CLI replacement surface. Anti-patterns: dead code PASS, synthetic fixture PASS, silent empty return PASS, FR coverage PASS, frozen surface PASS, locked decision PASS, shared ownership N/A, production fragility PASS. Go, make, Linux pwsh, jq, no_coverage, synthetic JUnit, and checkbox persistence drift remain explicitly unexecuted/non-green."
-      ],
-      "provider": "__resolved_provider_absent__",
-      "review": null,
       "review_result": {
         "feedback_path": "C:\\Users\\Ruslan\\.codex-planning\\beads-fork-authority\\kitty-specs\\ruslan-beads-fork-authority-01M1HSDR\\tasks\\WP04-define-fork-release-identity\\review-cycle-2.md",
         "reference": "review-cycle://ruslan-beads-fork-authority-01M1HSDR/WP04-define-fork-release-identity/review-cycle-2.md",
         "reviewer": "user",
         "verdict": "approved"
       },
-      "role": "reviewer",
-      "shell_pid": 27860,
-      "shell_pid_created_at": "1788416241.0665283",
-      "subtasks": {
-        "T013": "done",
-        "T014": "done",
-        "T015": "done",
-        "T016": "done"
-      },
-      "tracker_refs": [
-        "https://github.com/rusliksu/beads/issues/1"
-      ]
+      "shell_pid": 27080,
+      "shell_pid_created_at": "1788415690.763317"
     }
   }
 }
