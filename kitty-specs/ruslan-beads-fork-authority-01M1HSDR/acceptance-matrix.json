@@ -48,10 +48,10 @@
       "criterion_id": "FR-005",
       "description": "Verify FR-005 is satisfied",
       "proof_type": "automated_test",
-      "evidence": null,
-      "pass_fail": "pending",
-      "verified_by": null,
-      "verified_at": null,
+      "evidence": "https://github.com/rusliksu/beads/actions/runs/33723364240",
+      "pass_fail": "pass",
+      "verified_by": "codex",
+      "verified_at": "2026-09-03T06:38:16.318547+00:00",
       "notes": "TODO: replace with a real acceptance criterion"
     },
     {
