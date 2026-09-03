@@ -85,7 +85,7 @@ try {
     $json = $identity | ConvertTo-Json -Depth 3
     $utf8WithoutBom = [System.Text.UTF8Encoding]::new($false)
     [System.IO.File]::WriteAllText($temporaryPath, "$json$([System.Environment]::NewLine)", $utf8WithoutBom)
-    [System.IO.File]::Move($temporaryPath, $fullOutputPath, $true)
+    [System.IO.File]::Move($temporaryPath, $fullOutputPath)
 }
 finally {
     if ([System.IO.File]::Exists($temporaryPath)) {
