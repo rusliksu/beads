@@ -1,0 +1,108 @@
+name: Fork Candidate Canary
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fork-canary-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+env:
+  BD_DISABLE_METRICS: "1"
+  BD_DISABLE_EVENT_FLUSH: "1"
+  CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  build-canary:
+    name: Fork canary (${{ matrix.platform }})
+    if: github.repository == 'rusliksu/beads'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            runner: ubuntu-latest
+            binary_name: bd
+          - platform: windows
+            runner: windows-latest
+            binary_name: bd.exe
+
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify checked-out candidate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $env:CANDIDATE_SHA) {
+            throw "Checked out $actual but expected candidate $env:CANDIDATE_SHA"
+          }
+
+      - name: Set up Go
+        id: setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Build, smoke, and record evidence
+        id: canary
+        shell: pwsh
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          RUNNER_LABEL: ${{ matrix.runner }}
+          BINARY_NAME: ${{ matrix.binary_name }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $evidenceDir = Join-Path $env:RUNNER_TEMP "fork-canary-$env:PLATFORM-$env:CANDIDATE_SHA"
+          New-Item -ItemType Directory -Path $evidenceDir -Force | Out-Null
+          $binary = Join-Path $evidenceDir $env:BINARY_NAME
+
+          go build -tags gms_pure_go -o $binary ./cmd/bd
+          if ($LASTEXITCODE -ne 0) { throw "Candidate build failed with exit code $LASTEXITCODE" }
+
+          & $binary version
+          if ($LASTEXITCODE -ne 0) { throw "Version smoke failed with exit code $LASTEXITCODE" }
+          & $binary help
+          if ($LASTEXITCODE -ne 0) { throw "Help smoke failed with exit code $LASTEXITCODE" }
+
+          $checksum = (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash.ToLowerInvariant()
+          $goVersion = (go version).Trim()
+          if ($LASTEXITCODE -ne 0) { throw "Reading Go version failed with exit code $LASTEXITCODE" }
+
+          $manifest = [ordered]@{
+            candidate_sha = $env:CANDIDATE_SHA
+            platform = $env:PLATFORM
+            runner = $env:RUNNER_LABEL
+            go_version = $goVersion
+            build_tags = 'gms_pure_go'
+            build_result = 'passed'
+            smoke_result = 'passed'
+            artifact_sha256 = $checksum
+            workflow_run_id = $env:WORKFLOW_RUN_ID
+          }
+          $manifestPath = Join-Path $evidenceDir 'canary-manifest.json'
+          $manifest | ConvertTo-Json | Set-Content -LiteralPath $manifestPath -Encoding utf8NoBOM
+          "$checksum  $env:BINARY_NAME" | Set-Content -LiteralPath (Join-Path $evidenceDir 'SHA256SUMS') -Encoding utf8NoBOM
+          "evidence_dir=$evidenceDir" | Add-Content -LiteralPath $env:GITHUB_OUTPUT -Encoding utf8NoBOM
+
+      - name: Upload commit-bound canary evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: fork-canary-${{ matrix.platform }}-${{ env.CANDIDATE_SHA }}
+          path: ${{ steps.canary.outputs.evidence_dir }}
+          retention-days: 3
+          if-no-files-found: error
