@@ -1,8 +1,8 @@
 # Mission Specification: Ruslan Beads Fork Authority
 
-**Mission Branch**: `codex/beads-fork-authority`  
-**Created**: 2026-09-02  
-**Status**: Draft  
+**Mission Branch**: `codex/beads-fork-authority`
+**Created**: 2026-09-02
+**Status**: Draft
 **Input**: Establish `rusliksu/beads` as Ruslan's behavior-identical Beads distribution, with `gastownhall/beads` retained as upstream provenance and every adoption, release, or installation kept behind an explicit gate.
 
 ## Intent Summary
